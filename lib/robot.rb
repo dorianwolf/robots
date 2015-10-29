@@ -61,11 +61,17 @@ class Robot
     @health = [@health + amount, MAX_HEALTH].min
   end
 
+  def heal!
+    raise RobotAlreadyDeadError if @health == 0
+    @health = MAX_HEALTH
+  end
+
   def recharge_shield
     @shield = MAX_SHIELD
   end
 
   def attack(robot)
+    raise NotARobotError unless robot.class == Robot
     if in_range?(robot) then
       if @equipped_weapon then
         @equipped_weapon.hit(robot)
@@ -119,4 +125,9 @@ class Robot
 
   end
 
+end
+
+class NotARobotError < StandardError
+end
+class RobotAlreadyDeadError < StandardError
 end

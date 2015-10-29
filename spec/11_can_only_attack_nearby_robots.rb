@@ -9,6 +9,12 @@ describe Robot do
   end
 
   describe '#attack' do
+
+    it "can only attack other robots" do
+      item = Item.new("rock", 10)
+      expect{@robot.attack(item)}.to raise_error NotARobotError
+    end
+
     context "with enemy robot directly above" do
       before(:each) do
         @robot2 = Robot.new

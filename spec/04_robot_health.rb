@@ -11,6 +11,14 @@ describe Robot do
     end
   end
 
+  describe "#heal!" do
+    it "can't heal! when dead" do
+      @robot.wound(50)
+      @robot.wound(100)
+      expect{@robot.heal!}.to raise_error RobotAlreadyDeadError
+    end
+  end
+
   describe "#wound" do
     it "decreases health" do
       @robot.wound(50)
