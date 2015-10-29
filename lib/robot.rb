@@ -2,15 +2,22 @@ require 'pry'
 
 class Robot
 
-  attr_reader :position, :items, :items_weight, :health
+  attr_reader :position, :items, :items_weight, :health, :shield
   attr_accessor :equipped_weapon
+
+  MAX_HEALTH = 100
+  MAX_SHIELD = 50
+  MAX_WEIGHT = 250
+
+  @@robot_list = []
 
   def initialize
     @position = [0,0]
     @items = []
     @items_weight = 0
-    @health = 100
-    @equipped_weapon = nil
+    @health = MAX_HEALTH
+    @shield = MAX_SHIELD
+    @@robot_list << self
   end
 
   def move_left
@@ -31,24 +38,31 @@ class Robot
 
   def pick_up(item)
 
-    if @items_weight < 250 then
+    if @items_weight < MAX_WEIGHT then
       @items << item
       @equipped_weapon = item if item.class.superclass == Weapon
-      binding.pry
-      item.feed(self) if @health <= 80 && item.class == BoxOfBolts
+      item.feed(self) if self.health <= 80 && item.class == BoxOfBolts
       @items_weight += item.weight
     end
 
   end
 
   def wound(amount)
-    @health -= amount
-    @health = 0 if @health < 0
+    if shield <= 0 then
+      @health -= amount
+      @health = 0 if @health < 0
+    else
+      @shield -= amount
+      @shield = 0 if @shield < 0
+    end
   end
 
   def heal(amount)
-    @health += amount
-    @health = 100 if @health > 100
+    @health = [@health + amount, MAX_HEALTH].min
+  end
+
+  def recharge_shield
+    @shield = MAX_SHIELD
   end
 
   def attack(robot)
@@ -72,8 +86,37 @@ class Robot
     is_below = @position[1] - range == robot.position[1]
     is_left_of = @position[0] - range == robot.position[0]
     is_right_of = @position[0] + range == robot.position[0]
+    is_on = @position == robot.position
 
-    is_above || is_below || is_left_of || is_right_of
+    is_above || is_below || is_left_of || is_right_of || is_on
+  end
+
+  def scan
+    pos_x = @position[0]
+    pos_y = @position[1]
+
+    at_left = Robot.in_position(pos_x - 1, pos_y)
+    at_right = Robot.in_position(pos_x + 1, pos_y)
+    above = Robot.in_position(pos_x, pos_y + 1)
+    below = Robot.in_position(pos_x, pos_y - 1)
+
+    at_left + at_right + above + below
+  end
+
+  class << self
+
+    def in_position(x, y)
+      counter = 0
+      @@robot_list.each do |robot|
+        counter += 1 if robot.position == [x,y]
+      end
+      counter
+    end
+
+    def robot_list
+      @@robot_list
+    end
+
   end
 
 end

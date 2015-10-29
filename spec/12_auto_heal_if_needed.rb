@@ -18,7 +18,7 @@ describe Robot do
 
     it "should not auto feed box of bolts if above 80hp" do
       allow(@robot).to receive(:health).and_return(81)
-      expect(@box_of_bolts).not_to receive(:feed)
+      expect(@box_of_bolts).not_to receive(:feed)      
       @robot.pick_up(@box_of_bolts)
     end
   end
