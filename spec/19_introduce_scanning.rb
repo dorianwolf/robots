@@ -2,6 +2,7 @@ require_relative 'spec_helper'
 
 describe Robot do
   before :each do
+    Robot.list_reset
     @robot1 = Robot.new
     @robot2 = Robot.new
     @robot2b = Robot.new

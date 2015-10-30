@@ -123,6 +123,10 @@ class Robot
       @@robot_list
     end
 
+    def list_reset
+      @@robot_list = []
+    end
+
   end
 
 end
